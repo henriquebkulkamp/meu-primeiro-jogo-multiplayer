@@ -16,54 +16,154 @@
                 left: 25%;
                 display: block;
             }
+
+            #scoreboard {
+                width: 100px;
+                height: 50px;
+            }
+
+            #demo {
+                border: 1px solid black;
+                border-radius:10px;
+                text-align: center;
+                font-size: 50px;
+                font-weight: bold;
+            }
+
         </style>
     </head>
     <body>
         <canvas id="screen" width="500" height="500"></canvas>
 
-        <script>
+        <div id="scoreboard">
+            <p id="demo">0:0</p>
+        </div>
+
+        <script> 
+
             const screen = document.getElementById("screen")
             const context = screen.getContext("2d")
+            
+            const widthPlayer = 2
+            const heightPlayer = 50
+
+            const widthBall = 5
+            const heightBall = 5
 
             const state = {
                 players:{
-                    'player1': {x:30, y:225},
-                    'player2': {x:470, y:225}
+                    'player1': {x:30, y:225, width:widthPlayer, height:heightPlayer, score: 0},
+                    'player2': {x:470, y:225, width:widthPlayer, height:heightPlayer, score: 0}
                 },
                 balls:{
-                    'ball1': {x:248, y:248}
+                    'ball1': {x:248, y:248, width:widthBall, height:heightBall, horizontal:-1, vertical:-1}
                 }
             }
 
             function createGame() {
                 function movePlayer(command) {
-                    console.log(`Moving ${command.playerId} with ${command.keyPressed}`)
+                    console.log(command)
+                    console.log(`game.movePlayer() -> Moving ${command.playerId} with ${command.keyPressed}`)
+
+                    const acceptedMoves = {
+                        w(player) {
+                            const move = 10
+                            console.log('game.movePlayer().ArrowUp() ->Moving PLayer Up')
+                            if (player.y - move >= 0) {
+                                player.y -= move
+                                return
+                            }
+                        },
+                        s(player) {
+                            const move = 10
+                            console.log('game.movePlayer().ArrowDown() ->Moving PLayer Down')
+                            if (player.y + move <= 450) {
+                                player.y += move
+                                return
+                            }
+                        }
+                    }
                 
                     const keyPressed = command.keyPressed
                     const player = state.players[command.playerId]
-
-                    if (keyPressed === 'ArrowUp' && player.y - 1 >= 0) {
-                        player.y -= 5
-                        return
-                    }
-
-                    if (keyPressed === 'ArrowDown' && player.y + 1 <= 450) {
-                        player.y += 5
-                        return
+                    const moveFunction = acceptedMoves[keyPressed]
+                    
+                    if (moveFunction){
+                        moveFunction(player)
                     } 
                 }
-
                 return {
                     movePlayer,
                     state
                 }
-
             }
+
+
+            function moveBall() {
+                    state.balls["ball1"].x += 10*state.balls["ball1"].horizontal / 3
+                    state.balls["ball1"].y += 5*state.balls["ball1"].vertical / 3
+                    checkBallCollision()
+            }
+
+            function checkBallCollision() {
+                const ball = state.balls["ball1"]
+                if (ball.x >= 490) {
+                    victory(state.players['player1'])
+                }
+
+                if (ball.x <= 5) {
+                    victory(state.players['player2'])
+                }
+
+                if (ball.y >= 490 || ball.y <= 0) {
+                    ball.vertical = ball.vertical * (-1)
+                }
+
+                var player = state.players["player1"]
+
+                if ((player.x <= ball.x && ball.x <= player.x + 2) && (player.y <= ball.y && ball.y <= player.y + 50)) {
+                    console.log(`Collision detected with ${player}`)
+                    ball.horizontal = 1
+                }
+
+                var player = state.players["player2"]
+
+                if ((player.x - 5 <= ball.x && ball.x <= player.x + 2) && (player.y <= ball.y && ball.y <= player.y + 50)) {
+                    console.log(`Collision detected with ${player}`)
+                    ball.horizontal = -1
+                }
+
+                function victory(player) {
+                    player.score += 1
+
+                    document.getElementById("demo").innerHTML = `${state.players["player1"].score}:${state.players["player2"].score}`;
+
+                    console.log(`Placar: ${state.players["player1"].score}:${state.players["player2"].score}`)
+
+                    var num = -1
+                    if (player.x < 248){
+                        num = 1
+                    }
+                    
+                    ball.horizontal = num
+                    ball.vertical = -1
+                    ball.x = 248
+                    ball.y = 248
+
+                    state.players["player1"].x = 30
+                    state.players["player1"].y = 225
+
+                    state.players["player2"].x = 470
+                    state.players["player2"].y = 225
+                }
+            }
+            
+
 
             const game = createGame()
             const keyboardListener = createKeyboardListener()
             keyboardListener.subscribe(game.movePlayer)
-            
+            setInterval(moveBall, 1000 / 30)
 
 
             function createKeyboardListener() {
@@ -76,7 +176,7 @@
                 }
 
                 function notifyAll(command) {
-                    console.log(`Notifying ${state.observers.length} observers`)
+                    console.log(`keyBoardListener -> Notifying ${state.observers.length} observers`)
 
                     for (const observerFunction of state.observers) {
                         observerFunction(command)
@@ -111,14 +211,14 @@
                 for (const playerId in state.players) {
                     const player = state.players[playerId]
                     context.fillStyle = 'white'
-                    context.fillRect(player.x, player.y, 2, 50)
+                    context.fillRect(player.x, player.y, player.width, player.height)
                 }
 
 
                 for (const ballId in state.balls) {
                     const ball = state.balls[ballId]
                     context.fillStyle = 'white'
-                    context.fillRect(ball.x, ball.y, 5, 5)
+                    context.fillRect(ball.x, ball.y, ball.width, ball.height)
                 }
                 
                 requestAnimationFrame(renderScreen)
