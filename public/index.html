@@ -31,6 +31,7 @@
             }
 
         </style>
+        <script src="/socket.io/socket.io.js"></script>
     </head>
     <body>
         <canvas id="screen" width="500" height="500"></canvas>
@@ -40,7 +41,7 @@
         </div>
 
         <script type="module">
-            import createKeyboardListener from './keyboardListener.js'
+            import createKeyboardListener from './keyboard-listener.js'
             import createGame from './game.js'
             import renderScreen from './render-screen.js'
 
@@ -54,7 +55,11 @@
 
             renderScreen(screen, game, requestAnimationFrame)
             
-            
+            const socket = io()
+            socket.on('connect', () => {
+                const playerId = socket.id
+                console.log(`>Player connected on Client with id: ${playerId}`)
+            })
 
         </script>
     </body>
