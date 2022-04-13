@@ -40,25 +40,39 @@
             <p id="demo">0:0</p>
         </div>
 
+        
+        
         <script type="module">
-            import createKeyboardListener from './keyboard-listener.js'
-            import createGame from './game.js'
             import renderScreen from './render-screen.js'
-
-            
-            const game = createGame()
-            const keyboardListener = createKeyboardListener()
-            keyboardListener.subscribe(game.movePlayer)
-            setInterval( game.moveBall, 1000 / 30 )
-
-            const screen = document.getElementById('screen')
-
-            renderScreen(screen, game, requestAnimationFrame)
             
             const socket = io()
+
             socket.on('connect', () => {
                 const playerId = socket.id
                 console.log(`>Player connected on Client with id: ${playerId}`)
+                const screen = document.getElementById('screen')
+            })
+
+            socket.on('setup', (state) => {
+                const gameState = state
+                renderScreen(screen, gameState, requestAnimationFrame)
+            })
+
+            socket.on('player', (playersConnected) => {
+                const playersConnected = playersConnected
+            })
+
+            socket.on('move', (state) => {
+                gameState = state
+            })
+
+            addEventListener('keydown', () => {
+                const keydown = event.key
+                const command = {
+                    playerId: socket.id,
+                    keydown
+                }
+                socket.emit('keyPressed', command)
             })
 
         </script>
