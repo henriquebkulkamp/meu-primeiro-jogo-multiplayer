@@ -6,18 +6,17 @@ import {Server} from 'socket.io'
 import createGame from './public/game.js'
 import createKeyboardListener from './public/keyboardListener.js'
 
+const playersConnected = []
 
 const app = express()
 const server = http.createServer(app)
 const sockets = new Server(server)
 
-const game = createGame()
+const game = createGame(playersConnected)
 const keyboardListener = createKeyboardListener() 
 keyboardListener.subscribe(game.movePlayer)
 
 app.use(express.static('public'))
-const playersConnected = []
-
 
 function filterPlayer() {
     if (playerId == playersConnected[0] || playerId == playersConnected[1]) {return true}

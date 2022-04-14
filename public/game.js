@@ -1,8 +1,12 @@
 export default function createGame(playersConnected) {
-    const player1 = playersConnected[0]
-    const player2 = playersConnected[1]
+    let player1 = 'xxxxxxxxx'
+    let player2 = 'yyyyyyyyy'
+    if (playersConnected.length > 3){
+        player1 = playersConnected[0]
+        player2 = playersConnected[1]
+    }
 
-    const state = {
+    let state = {
         players:{
             player1: {playerId: player1, x:30, y:225, width:5, height:50, score: 0},
             player2: {playerId: player2, x:470, y:225, width:5, height:50, score: 0}
@@ -111,16 +115,15 @@ export default function createGame(playersConnected) {
             const scorePlayer1 = state.players.player1.score
             const scorePlayer2 = state.players.player2.score
 
-            document.getElementById("demo").innerHTML = `${state.players["player1"].score}:${state.players["player2"].score}`;
+            // document.getElementById("demo").innerHTML = `${state.players.player1.score}:${state.players.player2.score}`;
 
             console.log(`Score: ${state.players["player1"].score}:${state.players["player2"].score}`)
 
-            var num = -1
+            const num = -1
             if (player == state.players.player1){
-                num = 1
+                num.value = 1
             }
 
-            
             state = {
                 players:{
                     player1: {playerId: player1, x:30, y:225, width:5, height:50, score: scorePlayer1},
@@ -131,9 +134,9 @@ export default function createGame(playersConnected) {
                 },
                 screen: {width:500, height:500}
             }
-        }
 
-        setTimeout(() => {state.balls.ball1.horizontal = num, state.balls.ball.vertical = -1}, 5000)
+            setTimeout(() => {state.balls.ball1.horizontal=num, state.balls.ball1.vertical=-1}, 5000)
+        }
     }
 
     return {
@@ -144,4 +147,5 @@ export default function createGame(playersConnected) {
         moveBall,
         state
     }
-}       
+}
+ 

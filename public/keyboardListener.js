@@ -5,7 +5,7 @@ export default function createKeyboardListener() {
     } 
     
     function subscribe(observerFunction) {
-        observers.push(observerFunction)
+        state.observers.push(observerFunction)
     }
     
     function notifyAll(command) {
