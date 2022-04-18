@@ -1,7 +1,6 @@
-export default function renderScreen(screen, state, requestAnimationFrame) {
-    const context = screen.getContext('2d')
+export default function renderScreen(context, state) {
     context.fillStyle = 'black'
-    context.fillRect(0, 0, state.scree.width, state.scree.height)
+    context.fillRect(0, 0, state.screen.width, state.screen.height)
 
 
     for (const playerId in state.players) {
@@ -11,13 +10,8 @@ export default function renderScreen(screen, state, requestAnimationFrame) {
     }
 
 
-    for (const ballId in state.balls) {
-        const ball = state.balls[ballId]
-        context.fillStyle = 'white'
-        context.fillRect(ball.x, ball.y, ball.width, ball.height)
-    }
+    const ball = state.balls.ball1
+    context.fillStyle = 'white'
+    context.fillRect(ball.x, ball.y, ball.width, ball.height)
     
-    requestAnimationFrame(() => {
-        renderScreen(screen, state, requestAnimationFrame)
-    })
 }

@@ -42,27 +42,33 @@
 
         <script type="module">
             import renderScreen from './render-screen.js'
-            
-            
+
+            const screen = document.getElementById('screen')   
+            const context = screen.getContext('2d')
             const socket = io()
 
             socket.on('connect', () => {
                 const playerId = socket.id
                 console.log(`>Player connected on Client with id: ${playerId}`)
-                const screen = document.getElementById('screen')
+                return {playerId}
             })
 
             socket.on('setup', (state) => {
-                const gameState = state
-                renderScreen(screen, gameState, requestAnimationFrame)
+                renderScreen(context, state) // Vai ter observer
             })
 
-            socket.on('player', (playersConnected) => {
-                const playersConnected = playersConnected
+            socket.on('move ball', (state) => {
+                renderScreen(context, state)
             })
 
-            socket.on('move', (state) => {
-                gameState = state
+            socket.on('victory', (command) => {
+                console.log(`> Received victory`)
+                console.log(command.state)
+                // document.getElementById("demo").innerText = `${command.state.players.playe1.score}:${command.state.players.playe2.score}`
+            })
+
+            socket.on('movePlayer', (state) => {
+                renderScreen(context, state)
             })
 
             addEventListener('keydown', () => {

@@ -1,6 +1,7 @@
-export default function createGame(playersConnected) {
+export default function createGame() {
     let player1 = 'xxxxxxxxx'
     let player2 = 'yyyyyyyyy'
+    const playersConnected = []
     if (playersConnected.length > 3){
         player1 = playersConnected[0]
         player2 = playersConnected[1]
@@ -17,16 +18,15 @@ export default function createGame(playersConnected) {
         screen: {width:500, height:500}
     }
 
-    function resetAll() {
-        state = {
-            players:{
-                player1: {playerId: player1, x:30, y:225, width:5, height:50, score: 0},
-                player2: {playerId: player2, x:470, y:225, width:5, height:50, score: 0}
-            },
-            balls:{
-                ball1: {x:248, y:248, width:10, height:10, horizontal:-1, vertical:-1}
-            },
-            screen: {width:500, height:500}
+    const observers = []
+
+    function subscribe(observerFunction) {
+        observers.push(observerFunction)
+    }
+    
+    function notifyAll(command) {
+        for (const observerFunction of observers) {
+            observerFunction(command)
         }
     }
 
@@ -109,43 +109,69 @@ export default function createGame(playersConnected) {
                 ball.horizontal = -1
             }
         }
-
-        function victory(player) {
-            player.score += 1
-            const scorePlayer1 = state.players.player1.score
-            const scorePlayer2 = state.players.player2.score
-
-            // document.getElementById("demo").innerHTML = `${state.players.player1.score}:${state.players.player2.score}`;
-
-            console.log(`Score: ${state.players["player1"].score}:${state.players["player2"].score}`)
-
-            const num = -1
-            if (player == state.players.player1){
-                num.value = 1
-            }
-
-            state = {
-                players:{
-                    player1: {playerId: player1, x:30, y:225, width:5, height:50, score: scorePlayer1},
-                    player2: {playerId: player2, x:470, y:225, width:5, height:50, score: scorePlayer2},
-                },
-                balls:{
-                    ball1: {x:248, y:248, width:10, height:10, horizontal:0, vertical:0}
-                },
-                screen: {width:500, height:500}
-            }
-
-            setTimeout(() => {state.balls.ball1.horizontal=num, state.balls.ball1.vertical=-1}, 5000)
-        }
     }
 
+    function victory(player) {
+        player.score ++
+        console.log(`${state.players.player1.score}:${state.players.player2.score}`)
+
+        const ball1 = state.balls.ball1
+        ball1.x = 248
+        ball1.y = 248
+        ball1.horizontal = 0
+        ball1.vertical = 0
+
+
+        const command = {
+            type: 'victory',
+            state
+        }
+
+        console.log(playersConnected.length)
+        if ((player.score > 4) && (playersConnected.length > 1) ){
+            endGame(player)
+        }
+
+        notifyAll(command)
+        setTimeout(() => {ball1.horizontal=1, ball1.vertical=1}, 5000)
+
+    }
+
+    function endGame(player) {
+        console.log('> End game')
+        console.log(`${player} win this game`)
+        if (playersConnected.length > 2) {substitutePlayer(player)}
+        if (playersConnected.length > 0) {player1 = playersConnected[0]}
+        if (playersConnected.length > 1) {player2 = playersConnected[1]}
+        
+        state = {
+            players: {player1: {playerId: player1, x:30, y:225, width:5, height:50, score: 0}, player2: {playerId: player2, x:470, y:225, width:5, height:50, score: 0}},
+            balls:{ ball1: {x:248, y:248, width:10, height:10, horizontal:0, vertical:0}},
+            screen: {width:500, height:500}
+        }
+
+    }
+
+    function substitutePlayer(winner) {
+        let loser = playersConnected[0]
+        let num = 0
+        if (winner == playersConnected[0]) {
+             loser = playersConnected[1]
+             num = 1
+        }
+        playersConnected.plice(num, 1)
+        playersConnected.push(loser)
+
+    }
+    
+
     return {
-        resetAll,
+        subscribe,
         setState,
         movePlayer,
-        checkBallCollision,
         moveBall,
+        victory,
+        playersConnected,
         state
     }
 }
- 
