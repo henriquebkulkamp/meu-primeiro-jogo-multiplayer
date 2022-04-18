@@ -63,8 +63,7 @@
 
             socket.on('victory', (command) => {
                 console.log(`> Received victory`)
-                console.log(command.state)
-                // document.getElementById("demo").innerText = `${command.state.players.playe1.score}:${command.state.players.playe2.score}`
+                document.getElementById("demo").innerText = `${command.score[0]}:${command.score[1]}`
             })
 
             socket.on('movePlayer', (state) => {
@@ -72,6 +71,7 @@
             })
 
             addEventListener('keydown', () => {
+                console.log(event.key)
                 const keydown = event.key
                 const command = {
                     playerId: socket.id,
@@ -79,6 +79,16 @@
                 }
                 socket.emit('keyPressed', command)
             })
+
+            if (0) {
+                const keydown = event.key
+                const command = {
+                    playerId: socket.id,
+                    keydown
+                }
+                console.log(keydown)
+                socket.emit('keyPressed', command)
+            }
 
         </script>
     </body>

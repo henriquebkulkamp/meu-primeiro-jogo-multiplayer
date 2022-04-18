@@ -47,6 +47,7 @@ setInterval(() => {
 
 
 sockets.on('keyPressed', (command) => {
+    console.log("> reciving a key press")
     const keydown = command.keydown
     const playerId = command.playerId
     if (filterPlayer) {
