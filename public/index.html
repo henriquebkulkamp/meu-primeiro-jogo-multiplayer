@@ -55,6 +55,16 @@
 
             socket.on('setup', (state) => {
                 renderScreen(context, state) // Vai ter observer
+                socket.emit('a', 'hello')
+                addEventListener('keydown', () => {
+                    console.log(event.key)
+                    const keydown = event.key
+                    const command = {
+                        playerId: socket.id,
+                        keydown
+                    }
+                    socket.emit('keyPressed', command)
+                })
             })
 
             socket.on('move ball', (state) => {
@@ -68,16 +78,6 @@
 
             socket.on('movePlayer', (state) => {
                 renderScreen(context, state)
-            })
-
-            addEventListener('keydown', () => {
-                console.log(event.key)
-                const keydown = event.key
-                const command = {
-                    playerId: socket.id,
-                    keydown
-                }
-                socket.emit('keyPressed', command)
             })
 
             if (0) {

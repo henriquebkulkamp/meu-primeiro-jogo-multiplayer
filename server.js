@@ -36,6 +36,26 @@ sockets.on('connection', (socket) => {
     game.playersConnected.push(playerId)
     console.log(game.playersConnected)
     socket.emit('setup', game.state)
+    socket.on('disconnect', () => {
+        console.log(`> Player disconnect: ${playerId}`)
+        for (let i=0; i<game.playersConnected.length; i++) {
+            if (game.playersConnected[i] === playerId) {
+                game.playersConnected.splice(i, 1)
+                console.log(game.playersConnected)
+            }
+        }
+    })
+
+    socket.on('keyPressed', (command) => {
+        console.log("> reciving a key press")
+        const keydown = command.keydown
+        const playerId = command.playerId
+        if (filterPlayer) {
+            keyboardListener.runAll(keydown, playerId)
+            sockets.emit('movePlayer', game.state)
+        }
+    })
+
 })
 
 
@@ -46,15 +66,6 @@ setInterval(() => {
 30)
 
 
-sockets.on('keyPressed', (command) => {
-    console.log("> reciving a key press")
-    const keydown = command.keydown
-    const playerId = command.playerId
-    if (filterPlayer) {
-        keyboardListener.runAll(keydown, playerId)
-        sockets.emit('movePlayer', game.state)
-    }
-})
 
 
 
