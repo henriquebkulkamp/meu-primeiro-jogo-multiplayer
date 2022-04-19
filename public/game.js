@@ -58,21 +58,14 @@ export default function createGame() {
             }
         }
         const keyPressed = command.keyPressed
-        const playerId = command.playerId
         let player = undefined
 
-        for (const obj in state.players) {
-            const objPlayer = state.players[obj]
-            if (objPlayer.playerId == playerId) {
-                player = obj
-                break
-            }
-        }
 
         const moveFunction = acceptedMoves[keyPressed]
         
-        if (moveFunction && player){
+        if (moveFunction){
             moveFunction(player)
+            console.log(">Roda até aqui tambem")
         } 
     }
     
@@ -142,6 +135,7 @@ export default function createGame() {
         p2.score = 0
         p2.x = 470
         p2.y = 225 
+        console.log(`${p1.playerId} e ${p2.playerId}`)
     }
 
     function substitutePlayer(winner) {

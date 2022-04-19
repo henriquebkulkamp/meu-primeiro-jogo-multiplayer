@@ -50,17 +50,16 @@
             socket.on('connect', () => {
                 const playerId = socket.id
                 console.log(`>Player connected on Client with id: ${playerId}`)
-                return {playerId}
             })
 
             socket.on('setup', (state) => {
+                const playerId = socket.id
                 renderScreen(context, state) // Vai ter observer
-                socket.emit('a', 'hello')
                 addEventListener('keydown', () => {
                     console.log(event.key)
                     const keydown = event.key
                     const command = {
-                        playerId: socket.id,
+                        player: playerId,
                         keydown
                     }
                     socket.emit('keyPressed', command)

@@ -15,19 +15,13 @@ export default function createKeyboardListener() {
             observerFunction(command)
         }
     }
-    function runAll(keydown, playerId) {
-        const keyPressed = keydown
-
-        const command = {
-            playerId: playerId,
-            keyPressed
-        }
-
+    function runAll(command) {
         notifyAll(command)
     }
 
     return {
         subscribe,
-        runAll
+        runAll,
+        state
     }
 }

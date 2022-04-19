@@ -22,8 +22,8 @@ game.subscribe((command) => {
     sockets.emit(command.type, command)
 })
 
-function filterPlayer() {
-    if (playerId == game.playersConnected[0] || playerId == game.playersConnected[1]) {return true}
+function filterPlayer(command) {
+    if (command.playerId == game.playersConnected[0] || command.playerId == game.playersConnected[1]) {return true}
     return false
 }
 
@@ -48,14 +48,20 @@ sockets.on('connection', (socket) => {
 
     socket.on('keyPressed', (command) => {
         console.log("> reciving a key press")
-        const keydown = command.keydown
-        const playerId = command.playerId
-        if (filterPlayer) {
-            keyboardListener.runAll(keydown, playerId)
+        console.log(command)
+        if (game.state.players.player1.playerId == command.player) {
+            command.player = state.players.player1
+            console.log('player1')
+            keyboardListener.runAll(command)
+            sockets.emit('movePlayer', game.state)
+        }
+        if (game.state.players.player2.playerId == command.player) {
+            command.player = state.players.player2
+            console.log('player2')
+            keyboardListener.runAll(command)
             sockets.emit('movePlayer', game.state)
         }
     })
-
 })
 
 
