@@ -58,15 +58,20 @@ export default function createGame() {
             }
         }
         const keyPressed = command.keyPressed
-        let player = undefined
 
-
-        const moveFunction = acceptedMoves[keyPressed]
-        
-        if (moveFunction){
-            moveFunction(player)
-            console.log(">Roda até aqui tambem")
-        } 
+        if (acceptedMoves[keyPressed]) {
+            if (command.player == 'player1') {
+                console.log(1)
+                let player = state.players.player1
+                acceptedMoves[keyPressed](player)
+                return
+            }
+            if (command.player == 'player2') {
+                let player = state.players.player2
+                acceptedMoves[keyPressed](player)
+                return
+            }
+        }
     }
     
     function moveBall() {
@@ -118,7 +123,7 @@ export default function createGame() {
             type: 'victory',
             score: [state.players.player1.score, state.players.player2.score]
         }
-        if (player.score > 1){endGame(player)}
+        if (player.score > 4){endGame(player)}
 
         notifyAll(command)
         setTimeout(() => {ball1.horizontal=1, ball1.vertical=1}, 5000)

@@ -22,12 +22,6 @@ game.subscribe((command) => {
     sockets.emit(command.type, command)
 })
 
-function filterPlayer(command) {
-    if (command.playerId == game.playersConnected[0] || command.playerId == game.playersConnected[1]) {return true}
-    return false
-}
-
-
 sockets.on('connection', (socket) => {
     const playerId = socket.id
 
@@ -47,17 +41,13 @@ sockets.on('connection', (socket) => {
     })
 
     socket.on('keyPressed', (command) => {
-        console.log("> reciving a key press")
-        console.log(command)
         if (game.state.players.player1.playerId == command.player) {
-            command.player = state.players.player1
-            console.log('player1')
+            command.player = 'player1'
             keyboardListener.runAll(command)
             sockets.emit('movePlayer', game.state)
         }
         if (game.state.players.player2.playerId == command.player) {
-            command.player = state.players.player2
-            console.log('player2')
+            command.player = 'player2'
             keyboardListener.runAll(command)
             sockets.emit('movePlayer', game.state)
         }

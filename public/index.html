@@ -56,12 +56,13 @@
                 const playerId = socket.id
                 renderScreen(context, state) // Vai ter observer
                 addEventListener('keydown', () => {
-                    console.log(event.key)
                     const keydown = event.key
+                    
                     const command = {
                         player: playerId,
-                        keydown
+                        keyPressed: keydown
                     }
+                    console.log(command)
                     socket.emit('keyPressed', command)
                 })
             })
@@ -78,16 +79,6 @@
             socket.on('movePlayer', (state) => {
                 renderScreen(context, state)
             })
-
-            if (0) {
-                const keydown = event.key
-                const command = {
-                    playerId: socket.id,
-                    keydown
-                }
-                console.log(keydown)
-                socket.emit('keyPressed', command)
-            }
 
         </script>
     </body>
